@@ -1,4 +1,3 @@
-const process = require("process");
 const { exec } = require("child_process");
 const util = require("util");
 const { existsSync } = require("fs");
@@ -29,7 +28,7 @@ module.exports = function({ commitsPerDay, workdaysOnly, startDate, endDate }) {
 
     const historyFolder = "my-history";
 
-    // Remove git history folder in case if it already exists.]
+    // Remove git history folder in case if it already exists.
     if (existsSync(`./${historyFolder}`)) {
       await execAsync(
         `${
@@ -44,7 +43,10 @@ module.exports = function({ commitsPerDay, workdaysOnly, startDate, endDate }) {
     await execAsync(`git init`);
 
     // Create commits.
-    for (const date of commitDateList) {
+    for (let i = 0; i < commitDateList.length; i++) {
+      const date = commitDateList[i];
+      const commitMsg = `TG-${i + 1}`;
+
       // Change spinner so user can get the progress right now.
       const dateFormatted = new Intl.DateTimeFormat("en", {
         day: "numeric",
@@ -55,7 +57,7 @@ module.exports = function({ commitsPerDay, workdaysOnly, startDate, endDate }) {
 
       await execAsync(`echo "${date}" > foo.txt`);
       await execAsync(`git add .`);
-      await execAsync(`git commit --quiet --date "${date}" -m "fake commit"`);
+      await execAsync(`git commit --quiet --date "${date}" -m "${commitMsg}"`);
     }
 
     spinner.succeed();
@@ -64,9 +66,7 @@ module.exports = function({ commitsPerDay, workdaysOnly, startDate, endDate }) {
       boxen(
         `${chalk.green("Success")} ${
           commitDateList.length
-        } commits have been created.
-      If you rely on this tool, please consider buying me a cup of coffee. I would appreciate it 
-      ${chalk.blueBright("https://www.buymeacoffee.com/artiebits")}`,
+        } commits have been created.`,
         { borderColor: "yellow", padding: 1, align: "center" }
       )
     );
